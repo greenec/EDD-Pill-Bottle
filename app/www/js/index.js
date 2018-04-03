@@ -16,6 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+var cipher = '';
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -45,12 +48,20 @@ function listSuccess(devices) {
         if(devices[i].name == 'raspberrypi') {
             bluetoothSerial.connect(devices[i].address, function() {
                 
+                var fingerprintConfig = {
+                    'clientId': 'ctc-bottle'
+                };
+
                 $('#left-btn').click(function() {
-                    bluetoothSerial.write('l');
+                    FingerprintAuth.encrypt(fingerprintConfig, function(result) {
+                        bluetoothSerial.write('l');
+                    });;
                 });
 
                 $('#right-btn').click(function() {
-                    bluetoothSerial.write('r');
+                    FingerprintAuth.encrypt(fingerprintConfig, function(result) {
+                        bluetoothSerial.write('r');
+                    });;
                 });
 
             });

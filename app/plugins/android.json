@@ -12,6 +12,9 @@
     },
     "cordova-plugin-bluetooth-serial": {
       "PACKAGE_NAME": "com.ctc.bottle"
+    },
+    "cordova-plugin-android-fingerprint-auth": {
+      "PACKAGE_NAME": "com.ctc.bottle"
     }
   },
   "dependent_plugins": {}

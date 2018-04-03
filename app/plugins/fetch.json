@@ -14,5 +14,13 @@
     },
     "is_top_level": true,
     "variables": {}
+  },
+  "cordova-plugin-android-fingerprint-auth": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-android-fingerprint-auth@^1.4.3"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }
