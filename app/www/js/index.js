@@ -1,70 +1,61 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
-var cipher = '';
+ var paired = false;
 
-var app = {
-    // Application Constructor
-    initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
-    },
+ var app = {
+ 	initialize: function() {
+ 		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+ 	},
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
+    // Bind any cordova events here. Common events are: 'pause', 'resume', etc.
     onDeviceReady: function() {
-        this.receivedEvent('deviceready');
-
-        bluetoothSerial.list(listSuccess);
-    },
-
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        
+    	lockControlInit();
+    	bluetoothInit();
     }
 };
 
 app.initialize();
 
-function listSuccess(devices) {
-    for(var i = 0; i < devices.length; i++) {
-        if(devices[i].name == 'raspberrypi') {
-            bluetoothSerial.connect(devices[i].address, function() {
-                
-                var fingerprintConfig = {
-                    'clientId': 'ctc-bottle'
-                };
+function lockControlInit() {
+	var fingerprintConfig = {
+		'clientId': 'ctc-bottle'
+	};
 
-                $('#left-btn').click(function() {
-                    FingerprintAuth.encrypt(fingerprintConfig, function(result) {
-                        bluetoothSerial.write('l');
-                    });;
-                });
+	$('#open-btn').click(function() {
+		FingerprintAuth.encrypt(fingerprintConfig, function() {
+			bluetoothSerial.write('l');
+		});;
+	});
 
-                $('#right-btn').click(function() {
-                    FingerprintAuth.encrypt(fingerprintConfig, function(result) {
-                        bluetoothSerial.write('r');
-                    });;
-                });
-
-            });
-        }
-    }
+	$('#close-btn').click(function() {
+		bluetoothSerial.write('r');
+	});
 }
+
+function bluetoothInit() {
+	setInterval(function() {
+
+		if(!paired) {
+			bluetoothSerial.list(function (devices) {
+				for(var i = 0; i < devices.length; i++) {
+					var device = devices[i];
+					if(device.name == 'raspberrypi') {
+
+						bluetoothSerial.connect(device.address,
+							function() { // connection succeded
+                                paired = true;
+                                $('#bluetooth-inactive').addClass('d-none');
+                                $('#bluetooth-active').removeClass('d-none');
+                            },
+                            function() { // connection failed or disconnected
+                            	paired = false;
+                            	$('#bluetooth-active').addClass('d-none');
+                            	$('#bluetooth-inactive').removeClass('d-none');
+                            });
+					}
+				}
+			});
+		}
+
+	}, 1000);
+}
+

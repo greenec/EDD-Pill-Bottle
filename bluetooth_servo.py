@@ -1,4 +1,3 @@
-import time
 import bluetooth
 import wiringpi
 
