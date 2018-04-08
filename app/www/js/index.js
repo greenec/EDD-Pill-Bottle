@@ -1,5 +1,5 @@
 
- var paired = false;
+ var paired = false, lockStatus;
 
  var app = {
  	initialize: function() {
@@ -20,14 +20,22 @@ function lockControlInit() {
 		'clientId': 'ctc-bottle'
 	};
 
-	$('#open-btn').click(function() {
-		FingerprintAuth.encrypt(fingerprintConfig, function() {
-			bluetoothSerial.write('l');
-		});;
-	});
+	$('#lock-toggle').click(function() {
+		if(lockStatus == 'locked') {
+			FingerprintAuth.encrypt(fingerprintConfig, function() {
+				bluetoothSerial.write('unlock');
 
-	$('#close-btn').click(function() {
-		bluetoothSerial.write('r');
+				lockStatus = 'unlocked';
+				drawLockStatus(lockStatus);
+			});
+		}
+
+		if(lockStatus == 'unlocked') {
+			bluetoothSerial.write('lock');
+
+			lockStatus = 'locked';
+			drawLockStatus(lockStatus);
+		}
 	});
 }
 
@@ -42,6 +50,13 @@ function bluetoothInit() {
 
 						bluetoothSerial.connect(device.address,
 							function() { // connection succeded
+								setTimeout(function() {
+									bluetoothSerial.read(function(status) {
+										lockStatus = status;
+										drawLockStatus(lockStatus);
+									});
+								}, 500);
+
                                 paired = true;
                                 $('#bluetooth-inactive').addClass('d-none');
                                 $('#bluetooth-active').removeClass('d-none');
@@ -59,3 +74,19 @@ function bluetoothInit() {
 	}, 1000);
 }
 
+function drawLockStatus(status) {
+	var icon, buttonText;
+
+	if(status == 'locked') {
+		icon = 'fa-lock';
+		buttonText = 'Unlock';
+	}
+
+	if(status == 'unlocked') {
+		icon = 'fa-unlock-alt';
+		buttonText = 'Lock';
+	}
+
+	$('#lock-status').removeClass('fa-lock fa-unlock-alt').addClass(icon);
+	$('#lock-toggle').text(buttonText);
+}
