@@ -40,36 +40,32 @@ function lockControlInit() {
 }
 
 function bluetoothInit() {
-	setInterval(function() {
-
-		if(!paired) {
-			bluetoothSerial.list(function (devices) {
-				for(var i = 0; i < devices.length; i++) {
-					var device = devices[i];
-					if(device.name == 'raspberrypi') {
-
-						bluetoothSerial.connect(device.address,
-							function() { // connection succeded
-								bluetoothSerial.read(function(status) {
-									lockStatus = status;
-									drawLockStatus(lockStatus);
-								});
-
-								paired = true;
-								$('#bluetooth-inactive').addClass('d-none');
-								$('#bluetooth-active').removeClass('d-none');
-							},
-							function() { // connection failed or disconnected
-								paired = false;
-								$('#bluetooth-active').addClass('d-none');
-								$('#bluetooth-inactive').removeClass('d-none');
-							});
-					}
-				}
-			});
+	bluetoothSerial.list(function (devices) {
+		for(var i = 0; i < devices.length; i++) {
+			var device = devices[i];
+			$('#device-list').append('<option value="' + device.address + '">' + device.name + '</option>');
 		}
+	});
 
-	}, 1000);
+	// TODO: loading animation and error handling for connecting
+	$('#connect').click(function() {
+		bluetoothSerial.connect( $('#device-list').val(),
+			function() { // connection succeded
+				bluetoothSerial.read(function(status) {
+					lockStatus = status;
+					drawLockStatus(lockStatus);
+				});
+
+				paired = true;
+				$('#bluetooth-inactive').addClass('d-none');
+				$('#bluetooth-active').removeClass('d-none');
+			},
+			function() { // connection failed or disconnected
+				paired = false;
+				$('#bluetooth-active').addClass('d-none');
+				$('#bluetooth-inactive').removeClass('d-none');
+			});
+	});
 }
 
 function drawLockStatus(status) {
