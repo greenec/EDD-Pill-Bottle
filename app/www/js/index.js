@@ -1,10 +1,10 @@
 
- var paired = false, lockStatus;
+var paired = false, lockStatus;
 
- var app = {
- 	initialize: function() {
- 		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
- 	},
+var app = {
+	initialize: function() {
+		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+	},
 
     // Bind any cordova events here. Common events are: 'pause', 'resume', etc.
     onDeviceReady: function() {
@@ -55,15 +55,15 @@ function bluetoothInit() {
 									drawLockStatus(lockStatus);
 								});
 
-                                paired = true;
-                                $('#bluetooth-inactive').addClass('d-none');
-                                $('#bluetooth-active').removeClass('d-none');
-                            },
-                            function() { // connection failed or disconnected
-                            	paired = false;
-                            	$('#bluetooth-active').addClass('d-none');
-                            	$('#bluetooth-inactive').removeClass('d-none');
-                            });
+								paired = true;
+								$('#bluetooth-inactive').addClass('d-none');
+								$('#bluetooth-active').removeClass('d-none');
+							},
+							function() { // connection failed or disconnected
+								paired = false;
+								$('#bluetooth-active').addClass('d-none');
+								$('#bluetooth-inactive').removeClass('d-none');
+							});
 					}
 				}
 			});
