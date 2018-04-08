@@ -50,12 +50,10 @@ function bluetoothInit() {
 
 						bluetoothSerial.connect(device.address,
 							function() { // connection succeded
-								setTimeout(function() {
-									bluetoothSerial.read(function(status) {
-										lockStatus = status;
-										drawLockStatus(lockStatus);
-									});
-								}, 500);
+								bluetoothSerial.read(function(status) {
+									lockStatus = status;
+									drawLockStatus(lockStatus);
+								});
 
                                 paired = true;
                                 $('#bluetooth-inactive').addClass('d-none');
