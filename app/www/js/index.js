@@ -1,4 +1,5 @@
 
+var storage = window.localStorage;
 var paired = false, lockStatus;
 
 var app = {
@@ -54,7 +55,7 @@ function bluetoothInit() {
 		bluetoothSerial.connect( $('#device-list').val(),
 			function() { // connection succeded
 				bluetoothSerial.read(function(status) {
-					lockStatus = status;
+					lockStatus = (status.length != 0) ? status : 'locked';
 					drawLockStatus(lockStatus);
 				});
 

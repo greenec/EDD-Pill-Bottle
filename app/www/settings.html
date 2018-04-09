@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html style="height: 100%;">
+<html>
 <head>
 	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
 
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
 
-	<title>Pill Bottle Controller</title>
+	<title>Settings</title>
 </head>
-<body style="height: 100%;">
-
+<body style="padding-top: 50px;">
 	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
 		<a href="index.html" class="navbar-brand">Pill Bottle App</a>
 		<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
@@ -18,11 +17,11 @@
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav mt-2">
 				<li class="nav-item">
-					<a class="nav-link active" href="index.html">
+					<a class="nav-link" href="index.html">
 						<i class='fa fa-home'></i> Home
 					</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item active">
 					<a class="nav-link" href="settings.html">
 						<i class='fa fa-gear'></i> Settings
 					</a>
@@ -31,37 +30,12 @@
 		</div>
 	</nav>
 
-	<div class="container d-flex justify-content-center" style="height: 100%;">
-		<div class="align-self-center">
-
-			<div>
-				<h1 class="text-center">Pill Bottle App</h1>
-
-				<div id="bluetooth-inactive" class="text-center">
-					<h3 class="text-uppercase text-danger">Bluetooth not connected</h3>
-					<div class="input-group my-4">
-						<select class="form-control" id="device-list"></select>
-						<div class="input-group-append">
-							<button class="btn btn-primary" id="connect">Connect</button>
-						</div>
-					</div>
-				</div>
-
-				<div id="bluetooth-active" class="d-none text-center">
-					<i class="fa" id="lock-status" style="font-size: 10em;"></i>
-					<div>
-						<button class="btn btn-primary" id="lock-toggle"></button>
-					</div>
-				</div>
-			</div>
-
-		</div>
+	<div class='container mt-4'>
+		<p>Your settings here</p>
 	</div>
 
 	<script type="text/javascript" src="cordova.js"></script>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-
-	<script type="text/javascript" src="js/index.js"></script>
 </body>
 </html>
