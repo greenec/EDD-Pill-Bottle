@@ -8,7 +8,7 @@
 
 	<title>Settings</title>
 </head>
-<body style="padding-top: 50px;">
+<body style="padding-top: 65px;">
 	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
 		<a href="index.html" class="navbar-brand">Pill Bottle App</a>
 		<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
@@ -30,12 +30,24 @@
 		</div>
 	</nav>
 
-	<div class='container mt-4'>
-		<p>Your settings here</p>
+	<div class='container'>
+		<label for="device-list">Pill Device - Bluetooth</label>
+		<div class="input-group">
+			<select class="form-control" id="device-list">
+				<option value="">Please select a device:</option>
+			</select>
+			<div class="input-group-append">
+				<button class="btn btn-primary" id="save">Save</button>
+			</div>
+		</div>
+
+		<span id="status"></span>
 	</div>
 
 	<script type="text/javascript" src="cordova.js"></script>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="js/settings.js"></script>
 </body>
 </html>

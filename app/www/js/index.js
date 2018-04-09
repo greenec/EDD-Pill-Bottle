@@ -42,32 +42,29 @@ function lockControlInit() {
 
 function bluetoothInit() {
 	bluetoothSerial.enable(function() {
-		bluetoothSerial.list(function (devices) {
-			for(var i = 0; i < devices.length; i++) {
-				var device = devices[i];
-				$('#device-list').append('<option value="' + device.address + '">' + device.name + '</option>');
+		setInterval(function() {
+			if(!paired) {
+			
+				// TODO: loading animation and error handling for connecting
+				bluetoothSerial.connect( storage.getItem('bluetoothAddr'),
+					function() { // connection succeded
+						bluetoothSerial.read(function(status) {
+							lockStatus = (status.length != 0) ? status : 'locked';
+							drawLockStatus(lockStatus);
+						});
+
+						paired = true;
+						$('#bluetooth-inactive').addClass('d-none');
+						$('#bluetooth-active').removeClass('d-none');
+					},
+					function() { // connection failed or disconnected
+						paired = false;
+						$('#bluetooth-active').addClass('d-none');
+						$('#bluetooth-inactive').removeClass('d-none');
+					});
+
 			}
-		});
-	});
-
-	// TODO: loading animation and error handling for connecting
-	$('#connect').click(function() {
-		bluetoothSerial.connect( $('#device-list').val(),
-			function() { // connection succeded
-				bluetoothSerial.read(function(status) {
-					lockStatus = (status.length != 0) ? status : 'locked';
-					drawLockStatus(lockStatus);
-				});
-
-				paired = true;
-				$('#bluetooth-inactive').addClass('d-none');
-				$('#bluetooth-active').removeClass('d-none');
-			},
-			function() { // connection failed or disconnected
-				paired = false;
-				$('#bluetooth-active').addClass('d-none');
-				$('#bluetooth-inactive').removeClass('d-none');
-			});
+		}, 1000);
 	});
 }
 
