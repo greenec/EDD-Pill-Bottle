@@ -2,6 +2,7 @@ import bluetooth
 import wiringpi
 import json
 import os 
+import time
 
 file_path = os.path.dirname(os.path.realpath(__file__)) + '/status.json'
 
@@ -24,13 +25,13 @@ server_socket.listen(1)
 client_socket, address = server_socket.accept()
 print "Accepted connection from ", address
 
-client_socket.send(status['lock_status'])
+client_socket.send(json.dumps(status))
 
 def lock():
-	wiringpi.pwmWrite(18, 75)
+	wiringpi.pwmWrite(18, 100)
 
 def unlock():
-	wiringpi.pwmWrite(18, 225)
+	wiringpi.pwmWrite(18, 250)
 
 while True:
 	data = client_socket.recv(1024)
@@ -44,6 +45,7 @@ while True:
 	if(data == "unlock"):
 		unlock()
 		status['lock_status'] = 'unlocked'
+		status['last_opened'] = (int)(time.time())
 
 	if(data == "exit"):
 		break
