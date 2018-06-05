@@ -1,6 +1,6 @@
 
 var storage = window.localStorage;
-var paired = false, lockStatus;
+var paired = false, lockStatus, lastOpened;
 
 var app = {
 	initialize: function() {
@@ -48,9 +48,14 @@ function bluetoothInit() {
 				// TODO: loading animation and error handling for connecting
 				bluetoothSerial.connect( storage.getItem('bluetoothAddr'),
 					function() { // connection succeded
-						bluetoothSerial.read(function(status) {
-							lockStatus = (status.length != 0) ? status : 'locked';
+						bluetoothSerial.read(function(statusObj) {
+							var status = JSON.parse(statusObj);
+
+							lockStatus = (status.length != 0) ? status['lock_status'] : 'locked';
 							drawLockStatus(lockStatus);
+
+							lastOpened = (status.length != 0) ? getDateString(new Date(status['last_opened'] * 1000)) : 'N/A';
+							$('#last-opened').text(lastOpened);
 						});
 
 						paired = true;
@@ -79,8 +84,15 @@ function drawLockStatus(status) {
 	if(status == 'unlocked') {
 		icon = 'fa-unlock-alt';
 		buttonText = 'Lock';
+
+		$('#last-opened').text(getDateString(new Date()));
 	}
 
 	$('#lock-status').removeClass('fa-lock fa-unlock-alt').addClass(icon);
 	$('#lock-toggle').text(buttonText);
+}
+
+function getDateString(date) {
+	var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+	return date.toLocaleDateString("en-US", options);
 }
