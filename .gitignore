@@ -49,3 +49,5 @@ Temporary Items
 app/node_modules
 app/platforms
 app/package-lock.json
+
+.idea/

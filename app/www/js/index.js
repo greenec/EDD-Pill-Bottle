@@ -1,8 +1,10 @@
 
-var storage = window.localStorage;
-var paired = false, lockStatus, lastOpened;
+const storage = window.localStorage;
 
-var app = {
+let paired = false;
+let lockStatus, lastOpened;
+
+let app = {
 	initialize: function() {
 		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 	},
@@ -17,13 +19,13 @@ var app = {
 app.initialize();
 
 function lockControlInit() {
-	var fingerprintConfig = {
+	const fingerprintConfig = {
 		'clientId': 'ctc-bottle'
 	};
 
 	$('#lock-toggle').click(function() {
-		if(lockStatus == 'locked') {
-			FingerprintAuth.encrypt(fingerprintConfig, function() {
+		if(lockStatus === 'locked') {
+			FingerprintAuth.encrypt(fingerprintConfig, function() { // user's fingerprint or passcode, pattern, etc. was accepted
 				bluetoothSerial.write('unlock');
 
 				lockStatus = 'unlocked';
@@ -31,7 +33,7 @@ function lockControlInit() {
 			});
 		}
 
-		if(lockStatus == 'unlocked') {
+		if(lockStatus === 'unlocked') {
 			bluetoothSerial.write('lock');
 
 			lockStatus = 'locked';
@@ -46,17 +48,50 @@ function bluetoothInit() {
 			if(!paired) {
 			
 				// TODO: loading animation and error handling for connecting
-				bluetoothSerial.connect( storage.getItem('bluetoothAddr'),
-					function() { // connection succeded
-						bluetoothSerial.read(function(statusObj) {
-							var status = JSON.parse(statusObj);
+				bluetoothSerial.connect(storage.getItem('bluetoothAddr'),
+					function() { // connection succeeded
+						let abortAndRetry = false;
 
-							lockStatus = (status.length != 0) ? status['lock_status'] : 'locked';
+						bluetoothSerial.read(function(statusMsg) {
+							let status;
+							try {
+								status = JSON.parse(statusMsg);
+							}
+							catch { // invalid JSON error, abort and try again later
+								abortAndRetry = true;
+								return;
+							}
+
+							if (status === null || status === undefined || status === "") {
+								abortAndRetry = true;
+								return;
+							}
+
+							switch (status['lock_status']) {
+								case 'locked':
+									lockStatus = status['lock_status'];
+									break;
+								case 'unlocked':
+									lockStatus = status['lock_status'];
+									break;
+								default:
+									// invalid lock status (neither locked nor unlocked) returned
+									abortAndRetry = true;
+									return;
+							}
 							drawLockStatus(lockStatus);
 
-							lastOpened = (status.length != 0) ? getDateString(new Date(status['last_opened'] * 1000)) : 'N/A';
+							if (status['last_opened'] !== undefined && Number.isInteger(status['last_opened'])) {
+								lastOpened = getDateString(new Date(status['last_opened'] * 1000));
+							} else {
+								lastOpened = 'N/A';
+							}
 							$('#last-opened').text(lastOpened);
 						});
+
+						if (abortAndRetry) {
+							return;
+						}
 
 						paired = true;
 						$('#bluetooth-inactive').addClass('d-none');
@@ -74,14 +109,14 @@ function bluetoothInit() {
 }
 
 function drawLockStatus(status) {
-	var icon, buttonText;
+	let icon, buttonText;
 
-	if(status == 'locked') {
+	if (status === 'locked') {
 		icon = 'fa-lock';
 		buttonText = 'Unlock';
 	}
 
-	if(status == 'unlocked') {
+	if (status === 'unlocked') {
 		icon = 'fa-unlock-alt';
 		buttonText = 'Lock';
 
@@ -93,6 +128,6 @@ function drawLockStatus(status) {
 }
 
 function getDateString(date) {
-	var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+	const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
 	return date.toLocaleDateString("en-US", options);
 }
