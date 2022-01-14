@@ -23,7 +23,7 @@ server_socket.bind(("", port))
 server_socket.listen(1)
 
 client_socket, address = server_socket.accept()
-print "Accepted connection from ", address
+print("Accepted connection from ", address)
 
 client_socket.send(json.dumps(status))
 
@@ -34,9 +34,9 @@ def unlock():
 	wiringpi.pwmWrite(18, 250)
 
 while True:
-	data = client_socket.recv(1024)
+	data = client_socket.recv(1024).decode('utf-8')
 
-	print "Received: %s" % data
+	print("Received: %s" % data)
 
 	if(data == "lock"):
 		lock()
